@@ -1,43 +1,39 @@
-import EventEmitter from './core/events'
-import {render} from './core/render'
-import {Context} from './core/context'
-import {IHiComponent} from './types/index'
-import dom, {Fragment}from './core/dom/dom'
+import EventEmitter from './core/events';
+import { render } from './core/render';
+import { Context } from './core/context';
+import { IHiComponent } from './types/index';
+import dom, { Fragment } from './core/dom/dom';
 
+class HiComponent implements IHiComponent {
+    static EventEmitter = EventEmitter;
+    static dom = dom;
+    static Fragment = Fragment;
 
-export default function HiComponent(this: IHiComponent): IHiComponent {
-    console.log('constructor6666')
-    this.context  = new Context()
-    this.eventBus = new EventEmitter()
-    this._init()
-    return this
-}
+    context: Context;
+    eventBus: EventEmitter;
+    private static cid = 0;
 
+    constructor() {
+        console.log('constructor6666');
+        this.context = new Context();
+        this.eventBus = new EventEmitter();
+        this._init();
+    }
 
+    render = render;
 
-let cid = 0
-let target = null
-HiComponent.prototype = {
-    constructor: HiComponent,
-    render,
-    _init(this: IHiComponent) {
-        this.eventBus.on('context:mounted', (data: any) => {
-            console.log('context:mounted', data)
-            // this._flush()
-            let component = Object.create(null)
-            component.parent = data.parent
-            this.context.components[cid++] = component
-        })
-    },
-    _flush() {
-        
+    private _init() {
+        this.eventBus.on('context:mounted', (data: { parent: any }) => {
+            console.log('context:mounted', data);
+            // this._flush();
+            const component: { parent: any } = { parent: data.parent };
+            this.context.components[HiComponent.cid++] = component;
+        });
+    }
+
+    private _flush() {
+        // Implement flush logic here
     }
 }
 
-HiComponent.EventEmitter = EventEmitter
-HiComponent.dom = dom
-HiComponent.Fragment = Fragment
-
-
-
- 
+export default HiComponent;
